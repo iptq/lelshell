@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<title>lelshell</title>
+		<link rel="stylesheet" href="/css/jquery.terminal.css" />
+		<style>
+			#lelterm {
+				width: 100%;
+				height: 100%;
+				position: fixed;
+				top: 0px;
+				left: 0px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="lelterm"></div>
+		<script type="text/javascript" src="//code.jquery.com/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/js/jquery.terminal.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#lelterm").terminal(function(command, term) {
+					$.ajax({ url: "/exec", type: "GET", data: { command: command } })
+					.done(function(result) {
+						if (result.success == 1) {
+							term.echo(result.message);
+						} else {
+							alert("SHIT SOMETHING FUCKED UP");
+						}
+					});
+				}, {
+					greetings: "LELShell [Version 1.0]\n(c) 2015 Whatever Corporation. All Rights Reserved.\n",
+					completion: function(term, string, callback) {
+						$.ajax({ url: "/comp", type: "GET", data: { command: string } })
+						.done(function(result) {
+							if (result.success == 1) {
+								callback(result.message);
+							} else {
+								alert("SHIT SOMETHING FUCKED UP");
+							}
+						});
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
