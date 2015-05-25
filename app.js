@@ -7,9 +7,10 @@ app.use(express.static('public'));
 
 app.get("/exec", function(req, res) {
 	if (req.query.command) {
-		var command = req.query.command;
-		exec(command, function (error, stdout, stderr) {
-			res.send({ success: 1, message: stdout });
+		var command = req.query.command.replace(/'/g, "\\'");
+		exec("sudo bash -c 'sudo -u hei " + command + "'", function (error, stdout, stderr) {
+			if (stdout) res.send({ success: 1, message: stdout });
+			else if (stderr) res.send({ success: 1, message: stderr });
 		});
 	} else {
 		res.send({ success: 0, message: "u done fucked up" });
@@ -18,9 +19,10 @@ app.get("/exec", function(req, res) {
 
 app.get("/comp", function(req, res) {
 	if (req.query.command) {
-		var command = req.query.command;
+		var command = req.query.command; //.replace(/'/g, "\\'");
 		exec("compgen -c " + command, function (error, stdout, stderr) {
-			res.send({ success: 1, message: stdout });
+			if (stdout) res.send({ success: 1, message: stdout });
+			else if (stderr) res.send({ success: 1, message: stderr });
 		});
 	} else {
 		res.send({ success: 0, message: "u done fucked up" });
